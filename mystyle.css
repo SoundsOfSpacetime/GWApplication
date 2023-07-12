@@ -24,6 +24,12 @@ body {
   background-color: #303030;
 }
 
+p {
+  color: white;
+  line-height: 100%;
+  font-size: 11px;
+}
+
 /* unvisited link */
 a:link {
   color: white;
@@ -122,14 +128,15 @@ a:visited {
 .openbtn {
   font-size: 20px;
   cursor: pointer;
-  background-color: #111;
+  background-color: #212121;
   color: white;
   padding: 10px 15px;
   border: none;
 }
 
 .openbtn:hover {
-  background-color: #444;
+  background-color: white;
+  color: black;
 }
 
 /* ----------------------------- Dropdown ----------------------------- */
@@ -219,19 +226,19 @@ a:visited {
 
 /* The side navigation menu */
 .sidenav {
-    height: 100%; /* 100% Full-height */
-    width: 400px; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Stay on top */
-    top: 0; /* Stay at the top */
-    left: -400px;
-    /* background:rgba(75,156,211,0.9) url('../img/unc_pine_cb.svg') no-repeat; */
-    /* background: #212121 url('../img/unc_pine_cb.svg') no-repeat; */
-    background:rgba(33,33,33,0.9);
-    background-size: 200%;
-    overflow-x: visible; /* Disable horizontal scroll */
-    padding-top: 60px; /* Place content 60px from the top */
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+  height: 100%; /* 100% Full-height */
+  width: 500px; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top layer */ 
+  top: 0; /* Stay at the top */
+  left: -500px;
+  /* background:rgba(75,156,211,0.9) url('../img/unc_pine_cb.svg') no-repeat; */
+  /* background: #212121 url('../img/unc_pine_cb.svg') no-repeat; */
+  background:rgba(33,33,33,0.9);
+  background-size: 200%;
+  overflow-x: visible; /* Disable horizontal scroll */
+  padding-top: 60px; /* Place content 60px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
 }
 
 /* The navigation menu links */
@@ -265,6 +272,19 @@ a.sidenav:nth(1) {
 @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
+}
+
+.sidebarBox {
+  border: 3px solid white;
+  /* Hexadecimal #3d3d3d is the same as RGB(61,61,61). RGBA used to change opacity. */
+  background-color: rgba(61,61,61,0.5);
+  text-align: center;
+  padding: 10px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  line-height: 40%;
 }
 
 /* -------------------------------- Bottom Bar ------------------------------- */
