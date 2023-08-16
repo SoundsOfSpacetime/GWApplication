@@ -10,34 +10,12 @@
 
 'use strict'
 
-// Timer needed in order to make page load before alert shows
-//let myTimer = setTimeout(headphoneAlert, 10);
-function headphoneAlert() {
-    window.alert("Headphones are recommended for the best user experience. Cellphone and laptops may not be able to produce frequencies near 90 Hz.");
-}
-
 //=============================================================================//
 // ------------------------------ Slider Debug ------------------------------- //
 //=============================================================================//
 function printVars() {
     console.log({alpha}, {m1sliderval}, {m2sliderval});
 }
-
-//=============================================================================//
-// ----------------------------- Information Box ----------------------------- //
-//=============================================================================//
-
-// // Citation: https://www.codeproject.com/Questions/699630/How-to-display-the-specific-Text-on-change-of-HTML
-// var infoBoxArray = new Array();
-// infoBoxArray[0] = "Basic Binaries Sample Text: Learn a bit about the gravitational-wave signal from two coalescing black holes, including the different phases of the signal. We also explore the role of the total mass of the binary and the effect of neglecting the final merger of the two black holes.";
-// infoBoxArray[1] = "Circular Binaries Sample Text: Here we focus on two compact objects (neutron stars or black holes) in a circular orbit that is shrinking due to the gravitational waves that are emitted. We expect this to be the most common LIGO source.";
-// infoBoxArray[2] = "Spinning Binaries Sample Text: Now we allow our individual stars to spin about each of their axes. Because the spin of a body affects its gravity in Einstein's theory, we will see that the gravitational-wave signal (and the corresponding sound) is likewise affected.";
-// infoBoxArray[3] = 'Elliptical Binaries Sample Text: When we allow the binary orbit to be elliptical the "sound" of the signal become even more interesting.';
-
-// function getInfoText(slction){
-//     var txtSelected = slction.selectedIndex;
-//     document.getElementById('infoBox').innerHTML = infoBoxArray[txtSelected];
-// }
 
 //=============================================================================//
 // ----------------------------- Update function ----------------------------- //
@@ -125,13 +103,13 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
     // ----------------------------- Plotting ----------------------------- //
     // ----------------------- Strain vs. Time Plot ---------------------- //
     let layout0 = {
-        title: {text: 'Strain vs. Time', font: {family: 'Times New Roman', size: 32, color: 'white'}},
+        title: {text: ' Normalized Strain vs. Time', font: {family: 'Helvetica', size: 32, color: 'white'}},
         xaxis: {
             title: {
                 text: 'Time (sec)',
-                font: {family: 'Times New Roman', size: 26,color: 'white'}
+                font: {family: 'Helvetica', size: 26,color: 'white'}
             },
-            tickfont: {family: 'Times New Roman', size: 18, color: 'white'},
+            tickfont: {family: 'Helvetica', size: 18, color: 'white'},
             color: 'white',
             rangemode: 'nonnegative', // does this work?
             showgrid: false,
@@ -140,9 +118,9 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
         yaxis: {
             title: {
                 text: 'Normalized Strain',
-                font: {family: 'Times New Roman', size: 26,color: 'white'}
+                font: {family: 'Helvetica', size: 26,color: 'white'}
             },
-            tickfont: {family: 'Times New Roman', size: 18,color: 'white'},
+            tickfont: {family: 'Helvetica', size: 18,color: 'white'},
             color: 'white',
             showgrid: false,
             ticks: 'outside',
@@ -246,10 +224,14 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
     // ----------------------------- Audio ----------------------------- //
     document.getElementById("startAudioBtn").onclick = function() {playAudio()};
     const sampleRate = Math.floor(1/deltat);
-    console.log({N},{sampleRate});
+
+    // Citation: audio-resampler - https://www.npmjs.com/package/audio-resampler
+    let newSampleRate = 44100;
+    let resampledData = waveResampler.resample(h, sampleRate, newSampleRate);
+    let newNormalizedStrainData = new Float32Array(resampledData);
 
     function startAudio({ array, sampleRate }) {
-        let wav = new WAV(sampleRate,1); //1 = mono, 2 = stereo
+        let wav = new WAV(newSampleRate,1); //1 = mono, 2 = stereo
         wav.addSamples([array]);
         wav.play();
 
@@ -260,7 +242,7 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
         }
 
     function playAudio() {
-        startAudio({ array: h, sampleRate });
+        startAudio({ array: newNormalizedStrainData, newSampleRate });
     }
 
     // Download Audio
@@ -273,7 +255,7 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
     }
 
     function prepareDownload() {
-        downloadAudio({ array: h, sampleRate });
+        downloadAudio({ array: newNormalizedStrainData, newSampleRate });
     }
 } // ----------------------- End of Update Function ---------------------- //
 
@@ -352,3 +334,7 @@ function toggleFrequencyVsTimePlot() {
 }
 // ------------------ Execute update Function for initial time ------------------ //
 updateFunction(alpha, m1sliderval, m2sliderval, deviceSelection);
+toggleFrequencyVsTimePlot();
+
+// ------------------ Resize plot when window size is changed ------------------ //
+addEventListener("resize", (event) => {updateFunction(alpha, m1sliderval, m2sliderval, deviceSelection);});

@@ -98,14 +98,14 @@ a:visited {
   padding: 10px 15px;
   border: none;
   width: 170px;
-  border-radius: 10px;
+  border-radius: 3px;
 }
 
 .button:hover {
   color: black;
   background-color: white;
   transition: 0.2s;
-  border-radius: 10px;
+  border-radius: 3px;
 }
 
 /* Center UI Buttons */
@@ -132,11 +132,13 @@ a:visited {
   color: white;
   padding: 10px 15px;
   border: none;
+  border-radius: 3px;
 }
 
 .openbtn:hover {
   background-color: white;
   color: black;
+  border-radius: 3px;
 }
 
 /* ----------------------------- Dropdown ----------------------------- */
@@ -149,7 +151,7 @@ a:visited {
   padding: 10px 15px;
   border: none;
   width: 170px;
-  border-radius: 10px;
+  border-radius: 3px;
 }
 
 /* -------------------------- Description Box -------------------------- */

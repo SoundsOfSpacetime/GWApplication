@@ -2,6 +2,7 @@
 //=============================================================================//
 // --------------------------------- Header ---------------------------------- //
 //=============================================================================//
+//              Interactive Gravitational Wave Application                     //
 //                      Created by Kevin Johansmeyer                           //
 //                    Email: kevinjohansmeyer@gmail.com                        //
 //                 University: Montclair State University                      //
@@ -11,39 +12,43 @@
 
 <!-- Required Libraries: 
      - Plotly.js: https://plotly.com/javascript/ [MIT License]
-     - wav.js: https://github.com/taweisse/wavJS [MIT License] -->
+     - wav.js: https://github.com/taweisse/wavJS [MIT License]
+     - wave-resampler.js: https://www.npmjs.com/package/wave-resampler [MIT License]-->
      
 <!doctype html>
 
-     <html lang="en">
-       <head>
-         <meta charset="utf-8">
-         <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- For mobile display -->
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- For mobile display -->
+    
+        <title>Sounds of Spacetime</title>
+        <meta name="description" content="Our purpose is to explore the physics of gravitational waves via an analogy to audible sounds. Gravitational waves (GW) are ripples in the fabric of spacetime produced by colliding black holes, neutron stars, supernovae, and other astrophysical phenomena.">
+        <meta name="author" content="Kevin Johansmeyer">
+        <meta name="viewport" content="user-scalable=no, width=device-width"/> <!--mobile display -->
+        <meta property="og:title" content="Interactive Gravitational Wave Tool">
+        <meta property="og:type" content="Sounds of Spacetime">
+        <meta property="og:url" content="http://soundsofspacetime.org/">
+        <meta property="og:image" content="image.png">
      
-         <title>Sounds of Spacetime</title>
-         <meta name="description" content="Our purpose is to explore the physics of gravitational waves via an analogy to audible sounds. Gravitational waves (GW) are ripples in the fabric of spacetime produced by colliding black holes, neutron stars, supernovae, and other astrophysical phenomena.">
-         <meta name="author" content="Kevin Johansmeyer">
-         <meta name="viewport" content="user-scalable=no, width=device-width"/> <!--mobile display -->
-         <meta property="og:title" content="Interactive Gravitational Wave Tool">
-         <meta property="og:type" content="Sounds of Spacetime">
-         <meta property="og:url" content="http://soundsofspacetime.org/">
-         <meta property="og:image" content="image.png">
+        <link rel="icon" href="favicon.ico">
+        <!-- <link rel="icon" href="/favicon.svg" type="image/svg+xml"> -->
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
      
-         <link rel="icon" href="favicon.ico">
-         <!-- <link rel="icon" href="/favicon.svg" type="image/svg+xml"> -->
-         <link rel="apple-touch-icon" href="apple-touch-icon.png">
-     
-         <link rel="stylesheet" href="mystyle.css">
+        <link rel="stylesheet" href="mystyle.css">
         
-         <!-- Citation: https://github.com/taweisse/wavJS -->
-         <script src = "wav.js"></script>
+        <!-- Citation: https://github.com/taweisse/wavJS/blob/main/wav.js -->
+        <script src = "wav.js"></script>
 
-         <!-- Plotly.js (Plotting Library) [Keep in <head>] -->
-         <script src ="plotly-latest.min.js"></script> <!-- Refers to local file-->
-         <!-- <script src ="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
-       </head>
+        <!-- Citation: https://www.npmjs.com/package/wave-resampler -->
+        <script src="resampler.js"></script>
+
+        <!-- Plotly.js (Plotting Library) [Keep in <head>] -->
+        <script src ="plotly-latest.min.js"></script> <!-- Refers to local file-->
+        <!-- <script src ="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
+      </head>
      
-       <body>
+      <body>
           <noscript>You need to enable JavaScript to run this application.</noscript>
           <!-- Text -->
           <div id="main">
@@ -51,27 +56,36 @@
             <h1>Sounds of Spacetime - Interactive Gravitational Wave Tool</h1>
           </div>
              
-          <!-- Citation: https://www.w3schools.com/howto/howto_js_collapse_sidebar.asp -->
-          <div id="mySideNav" class="sidenav">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <!-- Citation: https://www.w3schools.com/howto/howto_js_collapse_sidebar.asp -->
+        <div id="mySideNav" class="sidenav">
+          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
 
-            <div class="sidebarBox">
-              <h2><u><a href="http://soundsofspacetime.org" target="_blank">Sounds of Spacetime</a></u></h2>
-              <div class="sideBarSubheading">
-                <a href="https://www.soundsofspacetime.org/what-are-gws.html" target="_blank">What are Gravitational Waves?</a>
-                <a href="https://www.soundsofspacetime.org/about-gw-sounds.html" target="_blank">About Gravitational Wave Sounds</a>
-                <a href="https://www.montclair.edu/physics-astronomy/" target="_blank">Montclair State University</a>
-              </div>
-            </div></br>
+          <div class="sidebarBox">
+            <h2><u><a href="http://soundsofspacetime.org" target="_blank">Sounds of Spacetime</a></u></h2>
+            <div class="sideBarSubheading">
+              <a href="https://soundsofspacetime.github.io/GWEvents/" target="_blank">Sonification of GW Events</a>
+              <a href="https://www.soundsofspacetime.org/what-are-gws.html" target="_blank">What are Gravitational Waves?</a>
+              <a href="https://www.soundsofspacetime.org/about-gw-sounds.html" target="_blank">About Gravitational Wave Sounds</a>
+            </div>
+          </div></br>
 
-            <div class="sidebarBox">
-              <h2><u><a href="https://www.gw-openscience.org/" target="_blank">GWOSC</a></u></h2>
-              <div class="sideBarSubheading">
-                <a href="https://www.gw-openscience.org/eventapi/html/allevents/" target="_blank">Event List</a>
-                <a href="https://gwosc.org/about/" target="_blank">About GWOSC</a>
-              </div>
-            </div></br>
-          </div>
+          <div class="sidebarBox">
+            <p><u>About This Page</u>:</br>
+            Laptop and phone speakers may not be able to produce lower frequencies. Headphones and Google Chrome are recommended. Plots 
+            are dynamically generated in JavaScript using approximate equations. These equations do not feature the ringdown period after the merger.</br></br>
+            </br></br>
+
+            <u>Credit</u>:</br>
+            Created by Kevin Johansmeyer</br>
+            Project advised by Dr. Marc Favata</br>
+            wav.js audio package created by Todd Weisse</br>
+            wave-resampler.js audio package created by Rafael da Silva Rocha</br>
+            Plotly.js used to contruct plots</p></br></br>
+
+            <u><a href="https://github.com/SoundsOfSpacetime/GWApplication" target="_blank">Visit this project on GitHub</a></u>
+            
+          </div></br>
+        </div>
 
             <div id="infoBox" class="infoBox">
               <div class="uiButtons">
@@ -95,9 +109,9 @@
                 <!-- Adjustable Sliders -->
                 <!-- Inmplement Sean Stopnik's sliders: https://css-tricks.com/value-bubbles-for-range-inputs/ -->
                 <div id="sliderLabels">
-                  <label for="alphaSlider"><b><u>alpha (higher-order harmonic)</u>:</b></label><br>
-                  <label for="m1slider"><b><u>Mass #1 (in terms of solar masses)</u>:</b></label><br>
-                  <label for="m2slider"><b><u>Mass #2 (in terms of solar masses)</u>:</b></label><br><br>
+                  <label for="alphaSlider"><b><u>Alpha</u>:</b></label><br>
+                  <label for="m1slider"><b><u>Mass #1</u>:</b></label><br>
+                  <label for="m2slider"><b><u>Mass #2</u>:</b></label><br><br>
                 </div>
 
                 <div id="sliders">
@@ -107,10 +121,10 @@
                   <output id="alphaSliderOutput">0</output><br>
 
                   <input type="range" min="1.1" max="10" value="1.4" step="0.1" class="slider" id="m1slider" oninput="this.nextElementSibling.value = this.value"> 
-                  <output id="m1SliderOutput">1.4</output><br>
+                  <output id="m1SliderOutput">1.4</output> M<sub>☉</sub><br>
 
                   <input type="range" min="1.1" max="10" value="1.4" step="0.1" class="slider" id="m2slider" oninput="this.nextElementSibling.value = this.value"> 
-                  <output id="m2SliderOutput">1.4</output><br>
+                  <output id="m2SliderOutput">1.4</output> M<sub>☉</sub><br>
               </div>
             </div>
             </div><br>
@@ -121,9 +135,12 @@
             
             <!-- Description Box -->
             <div id="descriptionBox">
-              Use Google Chrome and choose the appropriate device in order for the best experience. Laptop and phone speakers cannot play lower frequencies, and 
-              headphones may be needed. Plots are dynamically generated in JavaScript using approximate equations. These equations do not
-              feature the ringdown period after the merger.
+              <u>Description of Parameters</u>:</br>
+              Alpha is a constant [0,1] that adds a higher-harmonic to the signal. </br>
+              Mass #1 and Mass #2 are the masses of the two celestial bodies (black holes/neutron stars) in terms of solar masses. </br></br>
+
+              Google Chrome and headphones are recommended.
+
             </div><br>
 
              <!-- Bottom Images -->

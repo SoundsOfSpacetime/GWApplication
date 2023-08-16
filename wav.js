@@ -1,5 +1,12 @@
-// WAV file generation, download & playback library.
+//=============================================================================//
+// --------------------------------- Header ---------------------------------- //
+//=============================================================================//
+//                                 WAV.js                                      //
+//                          Created by Todd Weisse                             //
+//                    https://github.com/taweisse/wavJS                        //
+//=============================================================================//
 
+// WAV file generation, download & playback library.
 'use strict'
 
 function WAV(sampleRate, numChannels) {
@@ -160,7 +167,7 @@ function WAV(sampleRate, numChannels) {
 		
 		if (! _url) {
 			let blob = new Blob([_data.writeBuffer()], {
-				type: 'application/octet-stream'
+				type: 'audio/wav'
 			})
 			_url = window.URL.createObjectURL(blob)
 			_audio = new Audio(_url)
