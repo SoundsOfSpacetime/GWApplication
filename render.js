@@ -108,7 +108,6 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
     // ---------------------- Spin Precession Calculations ----------------------- //
     //=============================================================================//
     } else if (strTypeSelection == 'Spin Precession') {
-        // alert("Spin precession calculations are incorrect and not functioning properly. To be updated.");
         document.getElementById("alphaSlider").disabled = true;
         let eta = (m1 * m2) / (M * M), //reduced mass ratio, varies from 0 to 0.25
         fISCO = (1/36) * Math.sqrt(6) / (Math.PI * M), //ISCO = Innermost-Stable-Circular-Orbit
@@ -327,7 +326,7 @@ const m1slider = document.getElementById("m1slider");
 const m2slider = document.getElementById("m2slider");
 const selectDevice = document.getElementById("selectDevice");
 
-let alpha = Number(alphaSlider.value),
+var alpha = Number(alphaSlider.value),
     m1sliderval = Number(m1slider.value),
     m2sliderval = Number(m2slider.value),
     deviceSelection = new String("Laptop");
@@ -367,6 +366,7 @@ selectDevice.addEventListener('change', function (event) {
 selectType.addEventListener('change', function (event) {
     printVars();
     // Resets sliders and slider labels when device dropdown is changed
+    alpha = 0;
     document.getElementById("alphaSlider").value = 0;
     document.getElementById("alphaSliderOutput").innerHTML = "0";
     document.getElementById("m1slider").value = 1.4;
