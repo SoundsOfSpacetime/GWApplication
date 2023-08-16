@@ -56,11 +56,11 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
     //=============================================================================//
     // ---------------------- Higher-Harmonic Calculations ----------------------- //
     //=============================================================================//
-    if (strTypeSelection == 'Higher-Harmonic') { 
+    if (strTypeSelection == 'Higher-Harmonic') {
+        document.getElementById("alphaSlider").disabled = false;
         let eta = (m1 * m2) / (M * M), //reduced mass ratio, varies from 0 to 0.25
         fISCO = (1/36) * Math.sqrt(6) / (Math.PI * M), //ISCO = Innermost-Stable-Circular-Orbit
-        phic = 0,
-        phip = 0;
+        phic = 0;
 
         var v0 = Math.pow(Math.PI * M * f0, 1/3),
             vf = Math.pow(Math.PI * M * fISCO, 1/3); // fISCO ≈ fend
@@ -72,7 +72,7 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
             N = Math.floor(tf / deltat);
 
         //-------------------------------- Time Array ---------------------------------//
-        var t = new Float32Array(N).fill(0); //probably can define with time steps instead of defining with zeros
+        var t = new Array(N).fill(0); //probably can define with time steps instead of defining with zeros
 
         t[0] = 0; //fills t array with [0, deltat, 2*deltat, 3*deltat...]
         for (let i = 1; i < N; i++) {
@@ -80,10 +80,10 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
         }
 
         //----------------------------- Defining Arrays -----------------------------//
-        var f = new Float32Array(N).fill(0), //change this out for faster method? f = new Array(N); for (let i=0; i<n; ++i a[i]=0;
-            hUnfiltered = new Float32Array(N).fill(0),
-            phi = new Float32Array(N).fill(0),
-            v = new Float32Array(N).fill(0);
+        var f = new Array(N).fill(0), //change this out for faster method? f = new Array(N); for (let i=0; i<n; ++i a[i]=0;
+            hUnfiltered = new Array(N).fill(0),
+            phi = new Array(N).fill(0),
+            v = new Array(N).fill(0);
 
         f[0] = f0;
         v[0] = v0;
@@ -96,17 +96,20 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
             f[n] = Math.pow(v[n], 3) / (Math.PI * M);
             hUnfiltered[n] = A * ((Math.pow(v[n], 2)) * Math.sin(2 * phi[n]) + alpha * (Math.pow(v[n], 3) * Math.sin(3 * phi[n])));
         }
-
-        // Filter NaN's from the end of strain array
+        
+        // Filter NaN's from the end of strain array:
         var h = hUnfiltered.filter(x => x);
 
         // Maximum of the 200 values of h(t) [near the end] to determine how to draw y-axis limits
         var hSlice = h.slice(h.length-200,h.length);
         var hMax = Math.max(...hSlice);
+
     //=============================================================================//
     // ---------------------- Spin Precession Calculations ----------------------- //
     //=============================================================================//
     } else if (strTypeSelection == 'Spin Precession') {
+        // alert("Spin precession calculations are incorrect and not functioning properly. To be updated.");
+        document.getElementById("alphaSlider").disabled = true;
         let eta = (m1 * m2) / (M * M), //reduced mass ratio, varies from 0 to 0.25
         fISCO = (1/36) * Math.sqrt(6) / (Math.PI * M), //ISCO = Innermost-Stable-Circular-Orbit
         phic = 0,
@@ -122,7 +125,7 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
             N = Math.floor(tf / deltat);
 
         //-------------------------------- Time Array ---------------------------------//
-        var t = new Float32Array(N).fill(0); //probably can define with time steps instead of defining with zeros
+        var t = new Array(N).fill(0); //probably can define with time steps instead of defining with zeros
 
         t[0] = 0; //fills t array with [0, deltat, 2*deltat, 3*deltat...]
         for (let i = 1; i < N; i++) {
@@ -130,11 +133,11 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
         }
 
         //----------------------------- Defining Arrays -----------------------------//
-        var f = new Float32Array(N).fill(0), //change this out for faster method? f = new Array(N); for (let i=0; i<n; ++i a[i]=0;
-            hUnfiltered = new Float32Array(N).fill(0),
-            phi = new Float32Array(N).fill(0),
-            phip = new Float32Array(N).fill(0),
-            v = new Float32Array(N).fill(0);
+        var f = new Array(N).fill(0), //change this out for faster method? f = new Array(N); for (let i=0; i<n; ++i a[i]=0;
+            hUnfiltered = new Array(N).fill(0),
+            phi = new Array(N).fill(0),
+            phip = new Array(N).fill(0),
+            v = new Array(N).fill(0);
 
         f[0] = f0;
         v[0] = v0;
@@ -183,7 +186,7 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
             color: 'white',
             showgrid: false,
             ticks: 'outside',
-            range: [-hMax, hMax] //h.length - 1 is the last element in the array
+            range: [-hMax, hMax]
 
         },
         shapes: [ //Horizontal line for h vs. t plot
@@ -405,7 +408,7 @@ function toggleFrequencyVsTimePlot() {
 }
 // ------------------ Execute update Function for initial time ------------------ //
 updateFunction(alpha, m1sliderval, m2sliderval, deviceSelection);
-toggleFrequencyVsTimePlot();
+toggleFrequencyVsTimePlot(); // Hide plot when the page loads
 
 // ------------------ Resize plot when window size is changed ------------------ //
 addEventListener("resize", (event) => {updateFunction(alpha, m1sliderval, m2sliderval, deviceSelection);});
