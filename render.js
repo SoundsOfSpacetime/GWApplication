@@ -44,63 +44,122 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
         var f0 = 40; //Hertz
         var maxSliderVal = 5;
         var nStep = 4;
-    // } else if (strDeviceSelection == 'Subwoofer (40 Hz)') {
-    //     var f0 = 40; //Hertz
-    //     var maxSliderVal = 3;
     }
 
     document.getElementById("m1slider").setAttribute("max", maxSliderVal);
     document.getElementById("m2slider").setAttribute("max", maxSliderVal);
-    //----------------------------- Calculations ------------------------------//
-    let eta = (m1 * m2) / (M * M), //reduced mass ratio, varies from 0 to 0.25
+
+    //------------------- Higher-Harmonic/Spin Precession Selection --------------------- // 
+    var typeSelection = document.getElementById("selectType");
+    var strTypeSelection = typeSelection.options[typeSelection.selectedIndex].text;
+
+    //=============================================================================//
+    // ---------------------- Higher-Harmonic Calculations ----------------------- //
+    //=============================================================================//
+    if (strTypeSelection == 'Higher-Harmonic') { 
+        let eta = (m1 * m2) / (M * M), //reduced mass ratio, varies from 0 to 0.25
         fISCO = (1/36) * Math.sqrt(6) / (Math.PI * M), //ISCO = Innermost-Stable-Circular-Orbit
         phic = 0,
         phip = 0;
-    
-    let v0 = Math.pow(Math.PI * M * f0, 1/3),
-        vf = Math.pow(Math.PI * M * fISCO, 1/3); // fISCO ≈ fend
-    
-    let tc = 0 + (5 / 256) * (M / (eta * Math.pow(v0, 8))),
-        tf = 0 + (5 / 256) * (M / eta) * ((1 / Math.pow(v0, 8)) - (1 / Math.pow(vf, 8)));
 
-    // let nStep = 16,
-    let deltat = 1/(nStep*fISCO),
-        N = Math.floor(tf / deltat);
-    
-    //-------------------------------- Time Array ---------------------------------//
-    let t = new Float32Array(N).fill(0); //probably can define with time steps instead of defining with zeros
-    
-    t[0] = 0; //fills t array with [0, deltat, 2*deltat, 3*deltat...]
-    for (let i = 1; i < N; i++) {
-        t[i] = t[i - 1] + deltat;
+        var v0 = Math.pow(Math.PI * M * f0, 1/3),
+            vf = Math.pow(Math.PI * M * fISCO, 1/3); // fISCO ≈ fend
+
+        var tc = 0 + (5 / 256) * (M / (eta * Math.pow(v0, 8))),
+            tf = 0 + (5 / 256) * (M / eta) * ((1 / Math.pow(v0, 8)) - (1 / Math.pow(vf, 8)));
+
+        var deltat = 1/(nStep*fISCO),
+            N = Math.floor(tf / deltat);
+
+        //-------------------------------- Time Array ---------------------------------//
+        var t = new Float32Array(N).fill(0); //probably can define with time steps instead of defining with zeros
+
+        t[0] = 0; //fills t array with [0, deltat, 2*deltat, 3*deltat...]
+        for (let i = 1; i < N; i++) {
+            t[i] = t[i - 1] + deltat;
+        }
+
+        //----------------------------- Defining Arrays -----------------------------//
+        var f = new Float32Array(N).fill(0), //change this out for faster method? f = new Array(N); for (let i=0; i<n; ++i a[i]=0;
+            hUnfiltered = new Float32Array(N).fill(0),
+            phi = new Float32Array(N).fill(0),
+            v = new Float32Array(N).fill(0);
+
+        f[0] = f0;
+        v[0] = v0;
+
+        let A = 1/Math.pow(vf,2); // A scales the strain function: A = 1/(vf)^2 which makes -1 < h(t) < 1 when alpha = 0
+
+        for (let n = 0; n < N; n++) {
+            v[n] = Math.pow((256/5) * (eta/M) * (tc - t[n]), -1/8); //Solution to dv/dt = 32/5 (eta/M) v^9
+            phi[n] = phic - (1/5) * Math.pow(5/eta, 3/8) * Math.pow((tc - t[n]) / M, 5/8); //Solution to dphi/dt = v^3/M
+            f[n] = Math.pow(v[n], 3) / (Math.PI * M);
+            hUnfiltered[n] = A * ((Math.pow(v[n], 2)) * Math.sin(2 * phi[n]) + alpha * (Math.pow(v[n], 3) * Math.sin(3 * phi[n])));
+        }
+
+        // Filter NaN's from the end of strain array
+        var h = hUnfiltered.filter(x => x);
+
+        // Maximum of the 200 values of h(t) [near the end] to determine how to draw y-axis limits
+        var hSlice = h.slice(h.length-200,h.length);
+        var hMax = Math.max(...hSlice);
+    //=============================================================================//
+    // ---------------------- Spin Precession Calculations ----------------------- //
+    //=============================================================================//
+    } else if (strTypeSelection == 'Spin Precession') {
+        let eta = (m1 * m2) / (M * M), //reduced mass ratio, varies from 0 to 0.25
+        fISCO = (1/36) * Math.sqrt(6) / (Math.PI * M), //ISCO = Innermost-Stable-Circular-Orbit
+        phic = 0,
+        phip0 = 0;
+
+        var v0 = Math.pow(Math.PI * M * f0, 1/3),
+            vf = Math.pow(Math.PI * M * fISCO, 1/3); // fISCO ≈ fend
+
+        var tc = 0 + (5 / 256) * (M / (eta * Math.pow(v0, 8))),
+            tf = 0 + (5 / 256) * (M / eta) * ((1 / Math.pow(v0, 8)) - (1 / Math.pow(vf, 8)));
+
+        var deltat = 1/(nStep*fISCO),
+            N = Math.floor(tf / deltat);
+
+        //-------------------------------- Time Array ---------------------------------//
+        var t = new Float32Array(N).fill(0); //probably can define with time steps instead of defining with zeros
+
+        t[0] = 0; //fills t array with [0, deltat, 2*deltat, 3*deltat...]
+        for (let i = 1; i < N; i++) {
+            t[i] = t[i - 1] + deltat;
+        }
+
+        //----------------------------- Defining Arrays -----------------------------//
+        var f = new Float32Array(N).fill(0), //change this out for faster method? f = new Array(N); for (let i=0; i<n; ++i a[i]=0;
+            hUnfiltered = new Float32Array(N).fill(0),
+            phi = new Float32Array(N).fill(0),
+            phip = new Float32Array(N).fill(0),
+            v = new Float32Array(N).fill(0);
+
+        f[0] = f0;
+        v[0] = v0;
+
+        let A = 1/Math.pow(vf,2); // A scales the strain function: A = 1/(vf)^2 which makes -1 < h(t) < 1 when alpha = 0
+
+        for (let n = 0; n < N; n++) {
+            v[n] = Math.pow((256/5) * (eta/M) * (tc - t[n]), -1/8); //Solution to dv/dt = 32/5 (eta/M) v^9
+            phi[n] = phic - (1/5) * Math.pow(5/eta, 3/8) * Math.pow((tc - t[n]) / M, 5/8); //Solution to dphi/dt = v^3/M
+            phip[n] = -14 * Math.pow((256/5)*eta, -3/4) * Math.pow((tc - t[n]) / M, 1/4) + phip0;
+            f[n] = Math.pow(v[n], 3) / (Math.PI * M);
+            hUnfiltered[n] = A * (1 + Math.pow(Math.cos(phip[n]), 2)) * (Math.pow(v[n]), 2) * Math.sin(2 * phi[n]);
+        }
+
+        // Filter NaN's from the end of strain array
+        var h = hUnfiltered.filter(x => x);
+
+        // Maximum of the 200 values of h(t) [near the end] to determine how to draw y-axis limits
+        var hSlice = h.slice(h.length-200,h.length);
+        var hMax = Math.max(...hSlice);
     }
 
-    //----------------------------- Defining Arrays -----------------------------//
-    let f = new Float32Array(N).fill(0), //change this out for faster method? f = new Array(N); for (let i=0; i<n; ++i a[i]=0;
-        hUnfiltered = new Float32Array(N).fill(0),
-        phi = new Float32Array(N).fill(0),
-        v = new Float32Array(N).fill(0);
-    
-    f[0] = f0;
-    v[0] = v0;
-
-    let A = 1/Math.pow(vf,2); // A scales the strain function: A = 1/(vf)^2 which makes -1 < h(t) < 1 when alpha = 0
-
-    for (let n = 0; n < N; n++) {
-        v[n] = Math.pow((256/5) * (eta/M) * (tc - t[n]), -1/8); //Solution to dv/dt = 32/5 (eta/M) v^9
-        phi[n] = phic - (1/5) * Math.pow(5/eta, 3/8) * Math.pow((tc - t[n]) / M, 5/8); //Solution to dphi/dt = v^3/M
-        f[n] = Math.pow(v[n], 3) / (Math.PI * M);
-        hUnfiltered[n] = A * ((Math.pow(v[n], 2)) * Math.sin(2 * phi[n]) + alpha * (Math.pow(v[n], 3) * Math.sin(3 * phi[n])));
-    }
-
-    // Filter NaN's from the end of strain array
-    let h = hUnfiltered.filter(x => x);
-
-    // Maximum of the 200 values of h(t) [near the end] to determine how to draw y-axis limits
-    let hSlice = h.slice(h.length-200,h.length);
-    let hMax = Math.max(...hSlice);
-
-    // ----------------------------- Plotting ----------------------------- //
+    //=============================================================================//
+    // ----------------------------- Generating Plots ---------------------------- //
+    //=============================================================================//
     // ----------------------- Strain vs. Time Plot ---------------------- //
     let layout0 = {
         title: {text: ' Normalized Strain vs. Time', font: {family: 'Helvetica', size: 32, color: 'white'}},
@@ -291,6 +350,18 @@ m2slider.addEventListener('change', function (event) {
 })
 
 selectDevice.addEventListener('change', function (event) {
+    printVars();
+    // Resets sliders and slider labels when device dropdown is changed
+    document.getElementById("alphaSlider").value = 0;
+    document.getElementById("alphaSliderOutput").innerHTML = "0";
+    document.getElementById("m1slider").value = 1.4;
+    document.getElementById("m1SliderOutput").innerHTML = "1.4";
+    document.getElementById("m2slider").value = 1.4;
+    document.getElementById("m2SliderOutput").innerHTML = "1.4";
+    updateFunction(alpha, m1sliderval, m2sliderval, deviceSelection);
+})
+
+selectType.addEventListener('change', function (event) {
     printVars();
     // Resets sliders and slider labels when device dropdown is changed
     document.getElementById("alphaSlider").value = 0;
