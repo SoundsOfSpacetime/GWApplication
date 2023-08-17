@@ -231,7 +231,6 @@ input[type="range"]:active::-moz-range-progress {
 input[type="range"]:disabled::-moz-range-thumb {
 	cursor: not-allowed;
 }
-/* Test End */
 
 .slidecontainer {
   width: 100%;

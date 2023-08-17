@@ -108,6 +108,7 @@ function updateFunction(alpha, m1sliderval, m2sliderval) {
     // ---------------------- Spin Precession Calculations ----------------------- //
     //=============================================================================//
     } else if (strTypeSelection == 'Spin Precession') {
+        alert("Spin precession calculations are not fully implemented yet, so plots will not be correct.")
         document.getElementById("alphaSlider").disabled = true;
         let eta = (m1 * m2) / (M * M), //reduced mass ratio, varies from 0 to 0.25
         fISCO = (1/36) * Math.sqrt(6) / (Math.PI * M), //ISCO = Innermost-Stable-Circular-Orbit
