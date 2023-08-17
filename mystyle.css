@@ -262,6 +262,7 @@ input[type="range"]:disabled::-moz-range-thumb {
   border: none;
   width: 170px;
   border-radius: 3px;
+  margin: 3px;
 }
 
 .button:hover {
@@ -315,6 +316,7 @@ input[type="range"]:disabled::-moz-range-thumb {
   border: none;
   width: 170px;
   border-radius: 3px;
+  margin: 3px;
 }
 
 /* -------------------------- Description Box -------------------------- */
